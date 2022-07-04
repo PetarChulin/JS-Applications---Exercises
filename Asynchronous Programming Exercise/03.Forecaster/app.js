@@ -1,5 +1,4 @@
 function attachEvents() {
-
     let submitBtn = document.getElementById('submit');
     let location = document.getElementById('location');
     let forecast = document.getElementById('forecast');
@@ -7,6 +6,8 @@ function attachEvents() {
     let upcoming = document.getElementById('upcoming');
     submitBtn.addEventListener('click', getWeather);
     let cityId = '';
+    let currentDiv = el('div', '', 'forecasts', current);
+    let upcomingDiv = el('div', '', 'forecast-info', upcoming);
 
     function getWeather() {
 
@@ -16,7 +17,7 @@ function attachEvents() {
         fetch(`http://localhost:3030/jsonstore/forecaster/locations`)
             .then(res => res.json())
             .then(data => {
-                               
+                currentDiv.innerHTML = '';
                 for (const line of Object.values(data)) {
                     location.value == line.name ? cityId = line.code : null;
                 }
@@ -25,32 +26,29 @@ function attachEvents() {
                     .then(data => {
                         let cond = Object.values(data.forecast);
                         let weather = cond[0];
-                        let div = el('div', '', 'forecasts', current);
-                        el('span', `${symbol[weather]}`, 'condition symbol', div);
-                        let span = el('span', '', 'condition', div);
+                        el('span', `${symbol[weather]}`, 'condition symbol', currentDiv);
+                        let span = el('span', '', 'condition', currentDiv);
                         el('span', `${data.name}`, 'forecast-data', span);
                         el('span', `${cond[2] + '°' + '/' + cond[1] + '°'}`, 'forecast-data', span);
                         el('span', `${weather}`, 'forecast-data', span);
 
-                    }).catch(() => {                                         
-                        el('div', 'Error', 'forecasts', current);
+                    }).catch(() => {
+                        el('div', 'Error', '', currentDiv);
 
                     });
                 fetch(`http://localhost:3030/jsonstore/forecaster/upcoming/${cityId}`)
                     .then(res => res.json())
                     .then(data => {
-
+                        upcomingDiv.innerHTML = '';
                         let cond = Object.values(data.forecast);
-                        let div = el('div', '', 'forecast-info', upcoming);
                         for (const forecast of cond) {
 
-                            let span = el('span', '', 'upcoming', div);
+                            let span = el('span', '', 'upcoming', upcomingDiv);
                             el('span', `${symbol[forecast.condition]}`, 'symbol', span);
                             el('span', `${forecast.low + '°' + '/' + forecast.high + '°'}`, 'forecast-data', span);
                             el('span', `${forecast.condition}`, 'forecast-data', span);
                         }
                     });
-
             });
     }
     function el(type, content, clas, parent) {
