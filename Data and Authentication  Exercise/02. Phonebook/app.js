@@ -2,18 +2,17 @@ function attachEvents() {
 
     let phonebook = document.getElementById('phonebook');
     let person = document.getElementById('person');
-    let phone = document.getElementById('phone')
-    let loaded = false;
+    let phone = document.getElementById('phone');    
 
     document.getElementById('btnLoad').addEventListener('click', async () => {
-        if (loaded) { return };
+        
+        phonebook.replaceChildren();
         let res = await fetch('http://localhost:3030/jsonstore/phonebook');
         let data = await res.json();
         let records = Object.values(data);
         records.forEach(data => {
             createLi(data)
         });
-        loaded = true;
     });
     document.getElementById('btnCreate').addEventListener('click', async () => {
 
